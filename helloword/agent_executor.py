@@ -5,10 +5,10 @@ from a2a.utils import new_agent_text_message
 
 # --8<-- [start:HelloWorldAgent]
 class HelloWorldAgent:
-    """Hello World Agent."""
+    """ハローワールド・エージェント"""
 
     async def invoke(self) -> str:
-        return 'Hello World'
+        return 'ハロー・ワールド'
 
 
 # --8<-- [end:HelloWorldAgent]
@@ -16,7 +16,7 @@ class HelloWorldAgent:
 
 # --8<-- [start:HelloWorldAgentExecutor_init]
 class HelloWorldAgentExecutor(AgentExecutor):
-    """Test AgentProxy Implementation."""
+    """AgentProxy の実装をテストする。"""
 
     def __init__(self):
         self.agent = HelloWorldAgent()
@@ -37,6 +37,6 @@ class HelloWorldAgentExecutor(AgentExecutor):
     async def cancel(
         self, context: RequestContext, event_queue: EventQueue
     ) -> None:
-        raise Exception('cancel not supported')
+        raise Exception('cancel はサポートしてない。')
 
     # --8<-- [end:HelloWorldAgentExecutor_cancel]

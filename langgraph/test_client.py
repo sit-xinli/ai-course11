@@ -41,25 +41,25 @@ async def main() -> None:
 
         try:
             logger.info(
-                f'Attempting to fetch public agent card from: {base_url}{PUBLIC_AGENT_CARD_PATH}'
+                f'パブリック・エージェント・カードの取得を試みています: {base_url}{PUBLIC_AGENT_CARD_PATH}'
             )
             _public_card = (
                 await resolver.get_agent_card()
             )  # Fetches from default public path
-            logger.info('Successfully fetched public agent card:')
+            logger.info('パブリック・エージェント・カードのフェッチに成功.')
             logger.info(
                 _public_card.model_dump_json(indent=2, exclude_none=True)
             )
             final_agent_card_to_use = _public_card
             logger.info(
-                '\nUsing PUBLIC agent card for client initialization (default).'
+                '\nクライアントの初期化にPUBLICエージェントカードを使用（デフォルト）.'
             )
 
             if _public_card.supportsAuthenticatedExtendedCard:
                 try:
                     logger.info(
-                        '\nPublic card supports authenticated extended card. '
-                        'Attempting to fetch from: '
+                        '\nパブリック・カードは認証された拡張カードに対応。 '
+                        'ここからの取得を試みる: '
                         f'{base_url}{EXTENDED_AGENT_CARD_PATH}'
                     )
                     auth_headers_dict = {
@@ -70,7 +70,7 @@ async def main() -> None:
                         http_kwargs={'headers': auth_headers_dict},
                     )
                     logger.info(
-                        'Successfully fetched authenticated extended agent card:'
+                        'S認証された拡張エージェントカードのフェッチに成功した'
                     )
                     logger.info(
                         _extended_card.model_dump_json(
@@ -81,41 +81,42 @@ async def main() -> None:
                         _extended_card  # Update to use the extended card
                     )
                     logger.info(
-                        '\nUsing AUTHENTICATED EXTENDED agent card for client '
-                        'initialization.'
+                        '\nAUTHENTICATED EXTENDED エージェントカードをクライアントに使用する '
+                        '初期化.'
                     )
                 except Exception as e_extended:
                     logger.warning(
-                        f'Failed to fetch extended agent card: {e_extended}. '
-                        'Will proceed with public card.',
+                        f'拡張エージェントカードのフェッチに失敗しました: {e_extended}. '
+                        'パブリックカードで進める.',
                         exc_info=True,
                     )
             elif (
                 _public_card
             ):  # supportsAuthenticatedExtendedCard is False or None
                 logger.info(
-                    '\nPublic card does not indicate support for an extended card. Using public card.'
+                    '\nパブリック・カードはエクステンデッド・カードのサポートを示していない。 パブリック・カードを使用。'
                 )
 
         except Exception as e:
             logger.error(
-                f'Critical error fetching public agent card: {e}', exc_info=True
+                f'パブリック・エージェント・カードのフェッチでクリティカル・エラー: {e}', exc_info=True
             )
             raise RuntimeError(
-                'Failed to fetch the public agent card. Cannot continue.'
+                'パブリックエージェントカードの取得に失敗しました。 続行できません。'
             ) from e
 
         # --8<-- [start:send_message]
         client = A2AClient(
             httpx_client=httpx_client, agent_card=final_agent_card_to_use
         )
-        logger.info('A2AClient initialized.')
-
+        logger.info('>>>A2AClientが初期化された。<<<')
+        prompt = "10米ドルはINRでいくらですか？" 
+        print(f"\nUSER: {prompt}")
         send_message_payload: dict[str, Any] = {
             'message': {
                 'role': 'user',
                 'parts': [
-                    {'kind': 'text', 'text': 'how much is 10 USD in INR?'}
+                    {'kind': 'text', 'text': prompt }
                 ],
                 'messageId': uuid4().hex,
             },
@@ -129,13 +130,15 @@ async def main() -> None:
         # --8<-- [end:send_message]
 
         # --8<-- [start:Multiturn]
+        prompt = "1米ドルの最新為替レートはいくらですか？" 
+        print(f"\nUSER: {prompt}")
         send_message_payload_multiturn: dict[str, Any] = {
             'message': {
                 'role': 'user',
                 'parts': [
                     {
                         'kind': 'text',
-                        'text': 'How much is the exchange rate for 1 USD?',
+                        'text': prompt,
                     }
                 ],
                 'messageId': uuid4().hex,
@@ -149,13 +152,16 @@ async def main() -> None:
         response = await client.send_message(request)
         print(response.model_dump(mode='json', exclude_none=True))
 
+        prompt = "JPY" 
+        print(f"\nUSER: {prompt}")
+
         task_id = response.root.result.id
         contextId = response.root.result.contextId
 
         second_send_message_payload_multiturn: dict[str, Any] = {
             'message': {
                 'role': 'user',
-                'parts': [{'kind': 'text', 'text': 'CAD'}],
+                'parts': [{'kind': 'text', 'text': prompt}],
                 'messageId': uuid4().hex,
                 'taskId': task_id,
                 'contextId': contextId,

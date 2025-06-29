@@ -23,17 +23,17 @@ def get_exchange_rate(
     currency_to: str = 'EUR',
     currency_date: str = 'latest',
 ):
-    """Use this to get current exchange rate.
+    """現在の為替レートを取得するために使用します。
 
-    Args:
-        currency_from: The currency to convert from (e.g., "USD").
-        currency_to: The currency to convert to (e.g., "EUR").
-        currency_date: The date for the exchange rate or "latest". Defaults to
-            "latest".
+    引数
+        currency_from: 変換元の通貨 (例 "USD")。
+        currency_to： 変換先の通貨 (例 "EUR")。
+        currency_date: 為替レートの日付あるいは「最新」。 デフォルトは
+            "最新"。
 
-    Returns:
-        A dictionary containing the exchange rate data, or an error message if
-        the request fails.
+    戻り値：
+        為替レートデータを含む辞書。
+        を返します。
     """
     try:
         response = httpx.get(
@@ -44,36 +44,36 @@ def get_exchange_rate(
 
         data = response.json()
         if 'rates' not in data:
-            return {'error': 'Invalid API response format.'}
+            return {'error': '無効なAPI応答フォーマット.'}
         return data
     except httpx.HTTPError as e:
-        return {'error': f'API request failed: {e}'}
+        return {'error': f'APIリクエストの失敗: {e}'}
     except ValueError:
-        return {'error': 'Invalid JSON response from API.'}
+        return {'error': 'API からの JSON 応答が無効です。'}
 
 
 class ResponseFormat(BaseModel):
-    """Respond to the user in this format."""
+    """このフォーマットでユーザーに返答する。"""
 
     status: Literal['input_required', 'completed', 'error'] = 'input_required'
     message: str
 
 
 class CurrencyAgent:
-    """CurrencyAgent - a specialized assistant for currency convesions."""
+    """CurrencyAgent - 通貨取引に特化したアシスタントツール."""
 
     SYSTEM_INSTRUCTION = (
-        'You are a specialized assistant for currency conversions. '
-        "Your sole purpose is to use the 'get_exchange_rate' tool to answer questions about currency exchange rates. "
-        'If the user asks about anything other than currency conversion or exchange rates, '
-        'politely state that you cannot help with that topic and can only assist with currency-related queries. '
-        'Do not attempt to answer unrelated questions or use tools for other purposes.'
+        'あなたは通貨変換の専門アシスタントですね。 '
+        "あなたの唯一の目的は、為替レートに関する質問に答えるために'get_exchange_rate'ツールを使用することです。 "
+        'ユーザーが通貨換算や為替レート以外のことを尋ねてきたら、'
+        'そのトピックについては手助けできず、通貨関連の問い合わせにのみ手助けできることを丁寧に述べてください。 '
+        '関係のない質問に答えようとしたり、他の目的のためにツールを使用したりしないでください。'
     )
 
     FORMAT_INSTRUCTION = (
-        'Set response status to input_required if the user needs to provide more information to complete the request.'
-        'Set response status to error if there is an error while processing the request.'
-        'Set response status to completed if the request is complete.'
+        'リクエストを完了するためにユーザーがさらに情報を提供する必要がある場合は、レスポンスステータスを input_required に設定する'
+        'リクエストの処理中にエラーが発生した場合は、レスポンスステータスを error に設定する'
+        'リクエストが完了した場合は、応答ステータスを completed にする。'
     )
 
     def __init__(self):
@@ -111,13 +111,13 @@ class CurrencyAgent:
                 yield {
                     'is_task_complete': False,
                     'require_user_input': False,
-                    'content': 'Looking up the exchange rates...',
+                    'content': '為替レートを調べてみる...',
                 }
             elif isinstance(message, ToolMessage):
                 yield {
                     'is_task_complete': False,
                     'require_user_input': False,
-                    'content': 'Processing the exchange rates..',
+                    'content': '為替レートの処理中...',
                 }
 
         yield self.get_agent_response(config)
@@ -151,8 +151,8 @@ class CurrencyAgent:
             'is_task_complete': False,
             'require_user_input': True,
             'content': (
-                'We are unable to process your request at the moment. '
-                'Please try again.'
+                '現在、あなたのリクエストを処理することができません。 '
+                'もう一度お試しください.'
             ),
         }
 

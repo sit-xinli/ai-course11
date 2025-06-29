@@ -18,7 +18,7 @@ if __name__ == '__main__':
     skill = AgentSkill(
         id='hello_world',
         name='Returns hello world',
-        description='just returns hello world',
+        description='ハローワールドを返す',
         tags=['hello world'],
         examples=['hi', 'hello world'],
     )
@@ -27,7 +27,7 @@ if __name__ == '__main__':
     extended_skill = AgentSkill(
         id='super_hello_world',
         name='Returns a SUPER Hello World',
-        description='A more enthusiastic greeting, only for authenticated users.',
+        description='認証されたユーザーだけができる、より熱心な挨拶。',
         tags=['hello world', 'super', 'extended'],
         examples=['super hi', 'give me a super hello'],
     )
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     # This will be the public-facing agent card
     public_agent_card = AgentCard(
         name='Hello World Agent',
-        description='Just a hello world agent',
+        description='ただのハローワールドエージェント',
         url='http://localhost:9999/',
         version='1.0.0',
         defaultInputModes=['text'],
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     specific_extended_agent_card = public_agent_card.model_copy(
         update={
             'name': 'Hello World Agent - Extended Edition',  # Different name for clarity
-            'description': 'The full-featured hello world agent for authenticated users.',
+            'description': '認証されたユーザーのためのフル機能の hello world エージェント。',
             'version': '1.0.1',  # Could even be a different version
             # Capabilities and other fields like url, defaultInputModes, defaultOutputModes,
             # supportsAuthenticatedExtendedCard are inherited from public_agent_card unless specified here.

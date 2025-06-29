@@ -39,29 +39,29 @@ def main(host, port):
         if os.getenv('model_source', 'google') == 'google':
             if not os.getenv('GOOGLE_API_KEY'):
                 raise MissingAPIKeyError(
-                    'GOOGLE_API_KEY environment variable not set.'
+                    'GOOGLE_API_KEY環境変数が設定されていない.'
                 )
         else:
             if not os.getenv('TOOL_LLM_URL'):
                 raise MissingAPIKeyError(
-                    'TOOL_LLM_URL environment variable not set.'
+                    'TOOL_LLM_URL 環境変数が設定されていない.'
                 )
             if not os.getenv('TOOL_LLM_NAME'):
                 raise MissingAPIKeyError(
-                    'TOOL_LLM_NAME environment not variable not set.'
+                    'TOOL_LLM_NAME 環境変数が設定されていない.'
                 )
 
         capabilities = AgentCapabilities(streaming=True, pushNotifications=True)
         skill = AgentSkill(
             id='convert_currency',
             name='Currency Exchange Rates Tool',
-            description='Helps with exchange values between various currencies',
+            description='様々な通貨間の交換価値をサポート',
             tags=['currency conversion', 'currency exchange'],
-            examples=['What is exchange rate between USD and GBP?'],
+            examples=['USD と GBP の為替レートはいくらですか？'],
         )
         agent_card = AgentCard(
             name='Currency Agent',
-            description='Helps with exchange rates for currencies',
+            description='通貨の為替レートに役立つ',
             url=f'http://{host}:{port}/',
             version='1.0.0',
             defaultInputModes=CurrencyAgent.SUPPORTED_CONTENT_TYPES,
@@ -88,7 +88,7 @@ def main(host, port):
         logger.error(f'Error: {e}')
         sys.exit(1)
     except Exception as e:
-        logger.error(f'An error occurred during server startup: {e}')
+        logger.error(f'サーバー起動時にエラーが発生しました: {e}')
         sys.exit(1)
 
 

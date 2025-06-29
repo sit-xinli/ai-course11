@@ -40,24 +40,24 @@ async def main() -> None:
 
         try:
             logger.info(
-                f'Attempting to fetch public agent card from: {base_url}{PUBLIC_AGENT_CARD_PATH}'
+                f'パブリック・エージェント・カードの取得を試みて: {base_url}{PUBLIC_AGENT_CARD_PATH}'
             )
             _public_card = (
                 await resolver.get_agent_card()
             )  # Fetches from default public path
-            logger.info('Successfully fetched public agent card:')
+            logger.info('パブリック・エージェント・カードの取得に成功:')
             logger.info(
                 _public_card.model_dump_json(indent=2, exclude_none=True)
             )
             final_agent_card_to_use = _public_card
             logger.info(
-                '\nUsing PUBLIC agent card for client initialization (default).'
+                '\nクライアントの初期化にPUBLICエージェントカードを使用する（デフォルト）。'
             )
 
             if _public_card.supportsAuthenticatedExtendedCard:
                 try:
                     logger.info(
-                        f'\nPublic card supports authenticated extended card. Attempting to fetch from: {base_url}{EXTENDED_AGENT_CARD_PATH}'
+                        f'\nパブリック・カードは認証された拡張カードに対応。 ここからのフェッチを試みる。: {base_url}{EXTENDED_AGENT_CARD_PATH}'
                     )
                     auth_headers_dict = {
                         'Authorization': 'Bearer dummy-token-for-extended-card'
@@ -67,7 +67,7 @@ async def main() -> None:
                         http_kwargs={'headers': auth_headers_dict},
                     )
                     logger.info(
-                        'Successfully fetched authenticated extended agent card:'
+                        '認証された拡張エージェントカードのフェッチに成功：'
                     )
                     logger.info(
                         _extended_card.model_dump_json(
@@ -78,39 +78,39 @@ async def main() -> None:
                         _extended_card  # Update to use the extended card
                     )
                     logger.info(
-                        '\nUsing AUTHENTICATED EXTENDED agent card for client initialization.'
+                        '\nクライアントの初期化にAUTHENTICATED EXTENDEDエージェントカードを使用する。'
                     )
                 except Exception as e_extended:
                     logger.warning(
-                        f'Failed to fetch extended agent card: {e_extended}. Will proceed with public card.',
+                        f'拡張エージェントカードのフェッチに失敗: {e_extended}. パブリックカードで進める.',
                         exc_info=True,
                     )
             elif (
                 _public_card
             ):  # supportsAuthenticatedExtendedCard is False or None
                 logger.info(
-                    '\nPublic card does not indicate support for an extended card. Using public card.'
+                    '\nパブリック・カードはエクステンデッド・カードのサポートを示していない。 パブリック・カードを使用。'
                 )
 
         except Exception as e:
             logger.error(
-                f'Critical error fetching public agent card: {e}', exc_info=True
+                f'パブリック・エージェント・カードのフェッチでクリティカル・エラー: {e}', exc_info=True
             )
             raise RuntimeError(
-                'Failed to fetch the public agent card. Cannot continue.'
+                'パブリックエージェントカードのフェッチに失敗しました。 続行できません。'
             ) from e
 
         # --8<-- [start:send_message]
         client = A2AClient(
             httpx_client=httpx_client, agent_card=final_agent_card_to_use
         )
-        logger.info('A2AClient initialized.')
+        logger.info('>>>A2AClientが初期化された。<<<')
 
         send_message_payload: dict[str, Any] = {
             'message': {
                 'role': 'user',
                 'parts': [
-                    {'kind': 'text', 'text': 'how much is 10 USD in INR?'}
+                    {'kind': 'text', 'text': 'how much is 10 USD in JPY?'}
                 ],
                 'messageId': uuid4().hex,
             },
